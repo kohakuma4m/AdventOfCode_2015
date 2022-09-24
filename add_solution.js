@@ -10,6 +10,7 @@ if(!folder?.match(/^day[0-9][0-9]$/g)) {
 
 // Adding new solution directory
 if(!existsSync(folder)) {
+    console.log(`Creating new folder: ${folder}`);
     mkdirSync(folder);
 }
 
@@ -17,13 +18,13 @@ if(!existsSync(folder)) {
 const defaultTemplate = 'templates/default.js';
 const solutionFile = `${folder}/index.js`;
 if(!existsSync(solutionFile)) {
+    console.log(`Creating new default template: ${solutionFile}`);
     copyFileSync(defaultTemplate, solutionFile)
 }
 
-// Adding new solution input files
-[1,2].forEach(n => {
-    const inputFile = `${folder}/input${n}.txt`;
-    if(!existsSync(inputFile)) {
-        openSync(inputFile, 'w')
-    }
-});
+// Adding new solution input file
+const inputFile = `${folder}/input.txt`;
+if(!existsSync(inputFile)) {
+    console.log(`Creating new empty input file: ${inputFile}`);
+    openSync(inputFile, 'w')
+}

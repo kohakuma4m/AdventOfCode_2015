@@ -3,7 +3,7 @@
 
 # To create new day solution, run
   - `yarn addSolution dayXX`
-  - This will create new `dayXX` folder with `templates/default.js` base script and empty text input files
+  - This will create new `dayXX` folder with `templates/default.js` base script and empty text input file
   - Already existing solutions will not be overwritten
 
 # To run specific day solution, use
