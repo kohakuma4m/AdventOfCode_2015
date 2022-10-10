@@ -7,7 +7,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "node index.js",
-    "addSolution": "node add_solution.js"
+    "solution": "node index.js",
+    "generate": "node add_solution.js"
   }
 }

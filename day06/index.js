@@ -55,7 +55,7 @@ const INSTRUCTION_REGEX = /^(turn on|turn off|toggle) (\d+),(\d+) through (\d+),
 
 function readInstructions(lines) {
     return lines.map(line => {
-        const [instruction, x1, y1, x2, y2] = line.match(INSTRUCTION_REGEX).slice(1, 6);
+        const [instruction, x1, y1, x2, y2] = line.match(INSTRUCTION_REGEX).slice(1);
         return [instruction, new Position(parseInt(x1), parseInt(y1)), new Position(parseInt(x2), parseInt(y2))];
     })
 }

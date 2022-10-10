@@ -55,7 +55,7 @@ function readRoutes(lines) {
     const index = {};
 
     lines.forEach(line => {
-        const [source, destination, distance] = line.match(ROUTE_REGEX).slice(1, 4);
+        const [source, destination, distance] = line.match(ROUTE_REGEX).slice(1);
         if(!index[source]) {
             index[source] = {};
         }

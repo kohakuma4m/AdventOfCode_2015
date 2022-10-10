@@ -11,12 +11,12 @@ runSolution(folder, args);
 
 ////////////////////////////////////////////
 
-async function runSolution(solutionFolder, ...args) {
+async function runSolution(solutionFolder, args) {
     const options = {
         cwd: `./${solutionFolder}`
     };
 
-    await forkAsync('.', args, options)
+    await forkAsync('.', [...args], options)
         .then(result => console.log('DONE !'))
         .catch(err => console.error(err));
 }

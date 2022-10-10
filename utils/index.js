@@ -8,6 +8,12 @@ export const readInput = async function (filename) {
 };
 
 ////////////////////////////////////////////
+/* Array functions */
+
+export const sortByNumberAsc = (a, b) => a - b;
+export const sortByNumberDesc = (a, b) => b - a;
+
+////////////////////////////////////////////
 /* Math functions */
 
 export const totalBoxFaceArea = (l, w, h) => {
@@ -52,6 +58,68 @@ export const generateAllPermutations = (items, permutations = [], k = items.leng
     }
 
     return permutations;
+};
+
+/*
+    Algorithm to recursively generate all possible partitions of k subsets for an array of n items
+
+    e.g: With [1, 2, 3, 4] (n = 4) and k = 2
+
+        {} | { 1, 2, 3, 4 }
+        { 1 } | { 2, 3, 4 }
+        { 1, 2 } | { 3, 4 }
+        { 1, 2, 3 } | { 4 }
+        { 1, 2, 3, 4 } | {}
+
+    For a total of 5 possible ways to split an array of n=4 items in k=2 subsets
+*/
+export const generateAllPartitionsForArray = (items, k) => {
+    if(k <= 1) {
+        return [[items]]; // 1 subset of length n
+    }
+
+    const partitions = [];
+    for(let i = 0; i <= items.length; ++i) {
+        const leftSubset = items.slice(0, i);
+        const subPartitions = generateAllPartitionsForArray(items.slice(i), k - 1);
+        subPartitions.forEach(rightSubsets => {
+            // 1 subset of length i + k-1 subsets for sub array of length n-i
+            partitions.push([leftSubset, ...rightSubsets]);
+        });
+    }
+
+    return partitions;
+};
+
+/*
+    Faster version of the above algorithm if we only care about subsets size
+
+    e.g: With n = 4 and k = 2
+
+        {} | { 1, 2, 3, 4 } --> { 0 } | { 4 }
+        { 1 } | { 2, 3, 4 } --> { 1 } | { 3 }
+        { 1, 2 } | { 3, 4 } --> { 2 } | { 2 }
+        { 1, 2, 3 } | { 4 } --> { 3 } | { 1 }
+        { 1, 2, 3, 4 } | {} --> { 4 } | { 0 }
+
+    For a total of 5 possible ways to split n=4 items in k=2 subsets
+*/
+export const generateAllPartitions = (n, k) => {
+    if(k <= 1) {
+        return [[n]]; // 1 subset of length n
+    }
+
+    const partitions = [];
+    for(let i = 0; i <= n; ++i) {
+        const leftSubset = i;
+        const subPartitions = generateAllPartitions(n - i, k - 1);
+        subPartitions.forEach(rightSubsets => {
+            // 1 subset of length i + k-1 subsets for n-i items
+            partitions.push([leftSubset, ...rightSubsets]);
+        });
+    }
+
+    return partitions;
 };
 
 export class Position {
