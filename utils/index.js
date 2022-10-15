@@ -33,6 +33,27 @@ export const calculateRectanglePerimeter = (a, b) => 2 * a + 2 * b;
 export const calculateBoxVolumne = (a, b, c) => a * b * c;
 
 /*
+    Get all divisors of a number n >= 0, sorted in ascending order
+*/
+export const getAllDivisors = (n) => {
+    const smallDivisors = [];
+    const largeDivisors = [];
+
+    for(let i = 1; i <= Math.sqrt(n); ++i) {
+        if(n % i === 0) {
+            smallDivisors.push(i);
+
+            const otherDivisor = n / i;
+            if(otherDivisor !== i) {
+                largeDivisors.push(n / i);
+            }
+        }
+    }
+
+    return smallDivisors.concat(largeDivisors.reverse());
+}
+
+/*
     Heap's algorithm recursive implementation with O(n!) time complexity
     See https://en.wikipedia.org/wiki/Heap%27s_algorithm
 
@@ -73,7 +94,7 @@ export const generateAllPermutations = (items, permutations = [], k = items.leng
 
     For a total of 5 possible ways to split an array of n=4 items in k=2 subsets
 */
-export const generateAllPartitionsForArray = (items, k) => {
+export const generateAllPartitionsForArray = (items, k, subPartitionsIndex = {}) => {
     if(k <= 1) {
         return [[items]]; // 1 subset of length n
     }
@@ -81,8 +102,14 @@ export const generateAllPartitionsForArray = (items, k) => {
     const partitions = [];
     for(let i = 0; i <= items.length; ++i) {
         const leftSubset = items.slice(0, i);
-        const subPartitions = generateAllPartitionsForArray(items.slice(i), k - 1);
-        subPartitions.forEach(rightSubsets => {
+        const otherItems = items.slice(i);
+        const key = `${otherItems.join('_')}-${k - 1}`;
+        if(!subPartitionsIndex[key]) {
+            // Computing each sub partition only once
+            subPartitionsIndex[key] = generateAllPartitionsForArray(otherItems, k - 1, subPartitionsIndex);
+        }
+
+        subPartitionsIndex[key].forEach(rightSubsets => {
             // 1 subset of length i + k-1 subsets for sub array of length n-i
             partitions.push([leftSubset, ...rightSubsets]);
         });
@@ -135,6 +162,22 @@ export class Grid {
         this.width = width;
         this.height = height;
         this.grid = [...Array(height).keys()].map(() => [...Array(width).keys()].map(n => initialValue));
+    }
+
+    update(data) {
+        for(let j = 0; j < this.height; ++j) {
+            for(let i = 0; i < this.width; ++i) {
+                this.grid[j][i] = data[j][i];
+            }
+        }
+    }
+
+    cloneGrid() {
+        return this.grid.map(line => line.slice());
+    }
+
+    count(value) {
+        return this.grid.reduce((total, line) => total + line.filter(v => v === value).length, 0);
     }
 
     print() {

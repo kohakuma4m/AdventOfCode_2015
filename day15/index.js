@@ -1,5 +1,5 @@
 import process from 'process';
-import { readInput, generateAllPartitions } from '../utils/index.js';
+import { readInput, generateAllPartitions, generateAllPartitionsForArray } from '../utils/index.js';
 
 const DEFAULT_NB_CALORIES = 500;
 
@@ -90,6 +90,8 @@ function readIngredientsData(lines) {
 }
 
 function generateRecipes(ingredients) {
+    //return generateAllPartitionsForArray([...Array(NB_TEASPOONS).keys()], ingredients.length)
+    //    .map(c => c.map(subset => subset.length))
     return generateAllPartitions(NB_TEASPOONS, ingredients.length)
         .map(quantities => ({
             quantities: ingredients.reduce((index, ingredient, idx) => {
