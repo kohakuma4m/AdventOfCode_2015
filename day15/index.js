@@ -1,5 +1,5 @@
 import process from 'process';
-import { readInput, generateAllPartitions, generateAllPartitionsForArray } from '../utils/index.js';
+import { readInput, generateAllPartitions } from '../utils/index.js';
 
 const DEFAULT_NB_CALORIES = 500;
 

@@ -59,7 +59,7 @@ export const getAllDivisors = (n) => {
 
     Note: original array will be modified, but first found permutation will be equal to original array
 */
-export const generateAllPermutations = (items, permutations = [], k = items.length) => {
+export const generateAllPermutations = (items, k = items.length, permutations = []) => {
     if(k === 1) {
         // New permutation found
         permutations.push(items.slice());
@@ -67,7 +67,7 @@ export const generateAllPermutations = (items, permutations = [], k = items.leng
     }
 
     // Generate all sub permutations for original array
-    generateAllPermutations(items, permutations, k - 1);
+    generateAllPermutations(items, k - 1, permutations);
 
     // Generate all sub permutations for k-th item swapped with each of the k-1 original items
     for(let i = 0; i < k - 1; i++) {
@@ -75,10 +75,38 @@ export const generateAllPermutations = (items, permutations = [], k = items.leng
         [items[j], items[k - 1]] = [items[k - 1], items[j]]; // Swapping items simultanously
 
         // Generate all permutations for modified array
-        generateAllPermutations(items, permutations, k - 1);
+        generateAllPermutations(items, k - 1, permutations);
     }
 
     return permutations;
+};
+
+/*
+    Algorithm to recursively generate all possible unique subsets of length k from an array of n items (n choose k)
+
+    e.g: With [1, 2, 3, 4] (n = 4) and k = 2
+
+        { 1, 2 }, { 1, 3 }, { 1, 4 }
+        { 2, 3 }, { 2, 4 },
+        { 3, 4 }
+
+    For a total of 6 possible unique subsets of length k=2 for n=4 items
+*/
+export const generateAllCombinations = (items, k) => {
+    if(k <= 1) {
+        return [...items.map(i => ([i]))]; // n subsets of length 1
+    }
+
+    const combinations = [];
+    for(let i = 0; i <= items.length - k; ++i) {
+        const item = items[i];
+        const remainingItems = items.slice(i + 1);
+
+        const subCombinations = generateAllCombinations(remainingItems, k - 1);
+        subCombinations.forEach(subCombinationItems => combinations.push([item, ...subCombinationItems]));
+    }
+
+    return combinations;
 };
 
 /*
@@ -102,11 +130,11 @@ export const generateAllPartitionsForArray = (items, k, subPartitionsIndex = {})
     const partitions = [];
     for(let i = 0; i <= items.length; ++i) {
         const leftSubset = items.slice(0, i);
-        const otherItems = items.slice(i);
-        const key = `${otherItems.join('_')}-${k - 1}`;
+        const remainingItems = items.slice(i);
+        const key = `${remainingItems.join('_')}-${k - 1}`;
         if(!subPartitionsIndex[key]) {
             // Computing each sub partition only once
-            subPartitionsIndex[key] = generateAllPartitionsForArray(otherItems, k - 1, subPartitionsIndex);
+            subPartitionsIndex[key] = generateAllPartitionsForArray(remainingItems, k - 1, subPartitionsIndex);
         }
 
         subPartitionsIndex[key].forEach(rightSubsets => {
@@ -148,6 +176,58 @@ export const generateAllPartitions = (n, k) => {
 
     return partitions;
 };
+
+/*
+    Algorithm to generate all unique combinations of n items in k groups
+
+    e.g: With [1, 2, 3] n = 3 and k = 2
+
+        [ [ 1 ], [ 2, 3 ] ] <--> [ [ 2, 3 ], [ 1 ] ]
+        [ [ 2 ], [ 1, 3 ] ] <--> [ [ 1, 3 ], [ 2 ] ]
+        [ [ 3 ], [ 1, 2 ] ] <--> [ [ 1, 2 ], [ 3 ] ]
+
+    For a total of 3 possible ways to split n=3 items in k=2 groups in any order
+*/
+export const generateAllGroupCombinations = (items, nbGroups) => {
+    // Generating all partitions for items
+    const partitions = generateAllPartitions(items.length, nbGroups)
+        .filter(subsets => subsets.every(size => size > 0)) // Removing empty subsets
+        .map(p => p.sort(sortByNumberAsc)); // To remove duplicate partitions with partition key = JSON.stringify(p)
+
+    const partitionsIndex = {};
+    partitions.forEach(p => {
+        const key = JSON.stringify(p);
+        partitionsIndex[key] = p;
+    });
+    console.log(Object.values(partitionsIndex))
+
+    const combinationsIndex = {};
+    Object.values(partitionsIndex).forEach(groupSizes => {
+        // Choosing each group items, one group at a time
+        const combinationsToProcess = [{ groups: [], remainingItems: items.slice() }];
+        for(let i = 0; i < nbGroups; ++i) {
+            const nbGroupItemsToChoose = groupSizes[i];
+            const previousGroupCombinations = combinationsToProcess.splice(0, combinationsToProcess.length);
+            previousGroupCombinations.forEach(c => {
+                const groupCombinations = generateAllCombinations(c.remainingItems, nbGroupItemsToChoose);
+                groupCombinations.forEach(groupItems => {
+                    combinationsToProcess.push({
+                        groups: c.groups.concat([groupItems]),
+                        remainingItems: c.remainingItems.filter(i => !groupItems.includes(i))
+                    });
+                });
+            });
+        }
+
+        // Keeping only new unique combinations
+        combinationsToProcess.forEach(c => {
+            const key = JSON.stringify(c.groups);
+            combinationsIndex[key] = c.groups;
+        });
+    });
+
+    return Object.values(combinationsIndex);
+}
 
 export class Position {
     constructor(x, y) {
