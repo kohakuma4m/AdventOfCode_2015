@@ -1,0 +1,6 @@
+# AoC input files can't be shared (https://old.reddit.com/r/adventofcode/wiki/faqs/copyright/inputs)
+input.txt
+
+.DS_Store
+node_module/
+yarn.lock

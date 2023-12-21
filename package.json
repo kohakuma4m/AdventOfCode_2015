@@ -1,0 +1,13 @@
+{
+  "name": "aoc2015",
+  "version": "1.0.0",
+  "description": "Advent of code 2015 (node 14)",
+  "author": "kohakuma4m",
+  "license": "MIT",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "solution": "node index.js",
+    "generate": "node add_solution.js"
+  }
+}
